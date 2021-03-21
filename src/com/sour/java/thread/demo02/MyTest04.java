@@ -41,47 +41,56 @@ package com.sour.java.thread.demo02;
  */
 
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * 练习 Executors    性能优先(需要配置好)
- *      获取ExecutorService, 然后调用方法, 提交任务
+ * 练习 Executors
+ *      获取ExecutorService, 测试关闭线程池
  *
  * @author xgl
  * @date 2021/3/21 18:12
  **/
-public class MyTest {
+public class MyTest04 {
 
     public static void main(String[] args) {
-        // 创建一个默认的线程池对象,里面的线程可重用,且在第一次使用时才创建
+        // 整个线程池只有一个线程，任务需要排队来进行处理
 //        test01();
 
-        // 线程池中的所有线程都使用ThreadFactory来创建,这样的线程无需手动启动,自动执行;
+//         创建一个使用单个 worker 线程的 Executor，且线程池中的所有线程都使用ThreadFactory来创建。
         test02();
 
     }
 
     /**
-     *  创建一个默认的线程池对象,里面的线程可重用,且在第一次使用时才创建
+     *  整个线程池只有一个线程，任务需要排队来进行处理
+     *      固定线程数量为1
      *
      * @author xgl
      * @date 2021/3/21 18:25
      **/
     private static void test01() {
-        // 1, 利用工厂类获取线程池对象
-        ExecutorService ex = Executors.newCachedThreadPool();
+        // 1, 利用工厂类获取线程池对象 , 整个线程池只有一个线程，任务需要排队来进行处理
+        ExecutorService ex = Executors.newSingleThreadExecutor();
 
         // 2, 提交任务
         for (int i = 0; i < 10; i++) {
-            ex.submit(new MyRunnable(i));
+            ex.submit(new MyRunnable04(i));
         }
+
+        // 3, 关闭线程池, 仅仅是不再接受新的任务, 以前的任务还会继续执行完成
+        ex.shutdown();
+
+        // 测试是否还能提交 (不能提交, 并且还会有异常)
+//        ex.submit(new MyRunnable04(8888));
     }
 
 
     /**
-     *  线程池中的所有线程都使用ThreadFactory来创建,这样的线程无需手动启动,自动执行;
+     *  创建一个使用单个 worker 线程的 Executor，且线程池中的所有线程都使用ThreadFactory来创建。
+     *      固定线程数量1,  可自定义创建线程方式
      *
      * @author xgl
      * @date 2021/3/21 18:25
@@ -89,19 +98,22 @@ public class MyTest {
     private static void test02() {
 
         // 1, 利用工厂类获取线程池对象
-        ExecutorService ex = Executors.newCachedThreadPool(new ThreadFactory() {
+        ExecutorService ex = Executors.newSingleThreadExecutor(new ThreadFactory() {
             int n = 1;
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "自定义线程名称: " + n++);
-
             }
         });
 
         // 2, 提交任务
-        for (int i = 0; i < 10; i++) {
-            ex.submit(new MyRunnable(i));
+        for (int i = 0; i < 100; i++) {
+            ex.submit(new MyRunnable04(i));
         }
+
+        // 3, 立刻关闭线程池, 如果线程池还有缓存的任务, 则同样也关闭
+        List<Runnable> runnables = ex.shutdownNow();
+        System.out.println(runnables);
     }
 }
 
@@ -110,14 +122,14 @@ public class MyTest {
  *  任务类
  *      包含任务编号
  */
-class MyRunnable implements Runnable {
+class MyRunnable04 implements Runnable {
 
     /**
      *  任务编号
      */
     private int id;
 
-    public MyRunnable(int id) {
+    public MyRunnable04(int id) {
         this.id = id;
     }
 
@@ -126,5 +138,12 @@ class MyRunnable implements Runnable {
         // 获取线程的名称
         String name = Thread.currentThread().getName();
         System.out.println(name + " 执行了任务! " + id);
+    }
+
+    @Override
+    public String toString() {
+        return "MyRunnable04{" +
+                "id=" + id +
+                '}';
     }
 }

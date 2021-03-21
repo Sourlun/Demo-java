@@ -46,42 +46,44 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * 练习 Executors    性能优先(需要配置好)
+ * 练习 Executors   考虑安全(如:转账)
  *      获取ExecutorService, 然后调用方法, 提交任务
  *
  * @author xgl
  * @date 2021/3/21 18:12
  **/
-public class MyTest {
+public class MyTest03 {
 
     public static void main(String[] args) {
-        // 创建一个默认的线程池对象,里面的线程可重用,且在第一次使用时才创建
+        // 整个线程池只有一个线程，任务需要排队来进行处理
 //        test01();
 
-        // 线程池中的所有线程都使用ThreadFactory来创建,这样的线程无需手动启动,自动执行;
+        // 创建一个使用单个 worker 线程的 Executor，且线程池中的所有线程都使用ThreadFactory来创建。
         test02();
 
     }
 
     /**
-     *  创建一个默认的线程池对象,里面的线程可重用,且在第一次使用时才创建
+     *  整个线程池只有一个线程，任务需要排队来进行处理
+     *      固定线程数量为1
      *
      * @author xgl
      * @date 2021/3/21 18:25
      **/
     private static void test01() {
-        // 1, 利用工厂类获取线程池对象
-        ExecutorService ex = Executors.newCachedThreadPool();
+        // 1, 利用工厂类获取线程池对象 , 整个线程池只有一个线程，任务需要排队来进行处理
+        ExecutorService ex = Executors.newSingleThreadExecutor();
 
         // 2, 提交任务
         for (int i = 0; i < 10; i++) {
-            ex.submit(new MyRunnable(i));
+            ex.submit(new MyRunnable03(i));
         }
     }
 
 
     /**
-     *  线程池中的所有线程都使用ThreadFactory来创建,这样的线程无需手动启动,自动执行;
+     *  创建一个使用单个 worker 线程的 Executor，且线程池中的所有线程都使用ThreadFactory来创建。
+     *      固定线程数量1,  可自定义创建线程方式
      *
      * @author xgl
      * @date 2021/3/21 18:25
@@ -89,7 +91,7 @@ public class MyTest {
     private static void test02() {
 
         // 1, 利用工厂类获取线程池对象
-        ExecutorService ex = Executors.newCachedThreadPool(new ThreadFactory() {
+        ExecutorService ex = Executors.newSingleThreadExecutor(new ThreadFactory() {
             int n = 1;
             @Override
             public Thread newThread(Runnable r) {
@@ -100,7 +102,7 @@ public class MyTest {
 
         // 2, 提交任务
         for (int i = 0; i < 10; i++) {
-            ex.submit(new MyRunnable(i));
+            ex.submit(new MyRunnable03(i));
         }
     }
 }
@@ -110,14 +112,14 @@ public class MyTest {
  *  任务类
  *      包含任务编号
  */
-class MyRunnable implements Runnable {
+class MyRunnable03 implements Runnable {
 
     /**
      *  任务编号
      */
     private int id;
 
-    public MyRunnable(int id) {
+    public MyRunnable03(int id) {
         this.id = id;
     }
 
