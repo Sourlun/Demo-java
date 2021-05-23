@@ -1,4 +1,4 @@
-package com.juc.demo.conditionThread;
+package com.sour.java.juc.demo.conditionThread;
 
 import lombok.Getter;
 

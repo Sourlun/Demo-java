@@ -1,4 +1,4 @@
-package com.juc.demo.lock;
+package com.sour.java.juc.demo.lock;
 
 
 import java.util.concurrent.locks.Lock;

@@ -1,4 +1,4 @@
-package com.juc.demo.queue;
+package com.sour.java.juc.demo.queue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

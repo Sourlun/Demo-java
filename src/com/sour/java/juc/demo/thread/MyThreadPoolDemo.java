@@ -1,4 +1,4 @@
-package com.juc.demo.thread;
+package com.sour.java.juc.demo.thread;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;

@@ -1,5 +1,7 @@
 package com.juc.demo.conditionThread;
 
+import com.sour.java.juc.demo.conditionThread.CountryEnum;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
